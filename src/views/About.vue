@@ -14,7 +14,7 @@
         <line x1="50" y1="60" x2="100" y2="40" stroke="yellow"></line>
         <line x1="50" y1="60" x2="100" y2="80" stroke="yellow"></line>
       </g>
-      <use xlink:href="#whiskers" transform="scale(-1 1) translate(-100 0)"></use>
+      <use xlink:href="#whiskers" transform="scale(-1 1) translate(-120 0)"></use>
     </svg>
   </div>
 </template>
