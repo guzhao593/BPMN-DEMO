@@ -14,9 +14,16 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 // import propertiesPanelModule from 'bpmn-js-properties-panel'
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
-import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
+// import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
+/* 左边工具栏以及编辑节点的样式 */
+import 'bpmn-js/dist/assets/diagram-js.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'
+import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
+/* 右边工具栏样式 */
+import 'bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css'
 
-// /* eslint-disable */
+// /* eslint-disable */q
 export default {
   data () {
     return {
@@ -54,11 +61,11 @@ export default {
     // 获取到属性ref为“content”的dom节点
     this.container = this.$refs.content
     // 获取到属性ref为“canvas”的dom节点
-    const canvas = this.$refs.canvas
+    this.canvas = this.$refs.canvas
 
     // 建模，官方文档这里讲的很详细
     this.bpmnModeler = new BpmnModeler({
-      container: canvas,
+      container: this.canvas,
       // // 添加控制板
       // propertiesPanel: {
       //   parent: '#js-properties-panel'
@@ -68,10 +75,10 @@ export default {
         propertiesProviderModule
         // 右边的工具栏
         // propertiesPanelModule
-      ],
-      moddleExtensions: {
-        camunda: camundaModdleDescriptor
-      }
+      ]
+      // moddleExtensions: {
+      //   camunda: camundaModdleDescriptor
+      // }
     })
     var eventBus = this.bpmnModeler.get('eventBus')
     // you may hook into any of the following events
