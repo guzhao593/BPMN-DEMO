@@ -11,17 +11,17 @@
 <script>
 // 引入相关的依赖
 // import BpmnViewer from 'bpmn-js'
-import BpmnModeler from 'bpmn-js/lib/Modeler'
+// import BpmnModeler from 'bpmn-js/lib/Modeler'
 // import propertiesPanelModule from 'bpmn-js-properties-panel'
-import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
+// import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'
 // import camundaModdleDescriptor from 'camunda-bpmn-moddle/resources/camunda'
 /* 左边工具栏以及编辑节点的样式 */
-import 'bpmn-js/dist/assets/diagram-js.css'
-import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
-import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'
-import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
-/* 右边工具栏样式 */
-import 'bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css'
+// import 'bpmn-js/dist/assets/diagram-js.css'
+// import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css'
+// import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-codes.css'
+// import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css'
+// /* 右边工具栏样式 */
+// import 'bpmn-js-properties-panel/dist/assets/bpmn-js-properties-panel.css'
 
 // /* eslint-disable */q
 export default {
@@ -56,60 +56,60 @@ export default {
         }
       })
     }
-  },
-  mounted () {
-    // 获取到属性ref为“content”的dom节点
-    this.container = this.$refs.content
-    // 获取到属性ref为“canvas”的dom节点
-    this.canvas = this.$refs.canvas
-
-    // 建模，官方文档这里讲的很详细
-    this.bpmnModeler = new BpmnModeler({
-      container: this.canvas,
-      // // 添加控制板
-      // propertiesPanel: {
-      //   parent: '#js-properties-panel'
-      // },
-      additionalModules: [
-        // 左边工具栏以及节点
-        propertiesProviderModule
-        // 右边的工具栏
-        // propertiesPanelModule
-      ]
-      // moddleExtensions: {
-      //   camunda: camundaModdleDescriptor
-      // }
-    })
-    var eventBus = this.bpmnModeler.get('eventBus')
-    // you may hook into any of the following events
-    var events = [
-      // 'element.hover',
-      // 'element.out',
-      'element.click'
-      // 'element.dblclick',
-      // 'element.mousedown',
-      // 'element.mouseup'
-    ]
-    events.forEach(function (event) {
-      eventBus.on(event, function (e) {
-        // e.element = the model element
-        // e.gfx = the graphical element
-        console.log(event, 'on', e.element)
-      })
-    })
-    this.bpmnModeler.on('commandStack.changed', function () {
-      console.log('change')
-      // user modeled something or
-      // performed an undo/redo operation
-    })
-
-    this.bpmnModeler.on('element.changed', function (event) {
-      var element = event.element
-      console.log('element', element)
-      // the element was changed by the user
-    })
-    this.createNewDiagram(this.bpmnModeler)
   }
+  // mounted () {
+  //   // 获取到属性ref为“content”的dom节点
+  //   this.container = this.$refs.content
+  //   // 获取到属性ref为“canvas”的dom节点
+  //   this.canvas = this.$refs.canvas
+
+  //   // 建模，官方文档这里讲的很详细
+  //   this.bpmnModeler = new BpmnModeler({
+  //     container: this.canvas,
+  //     // // 添加控制板
+  //     // propertiesPanel: {
+  //     //   parent: '#js-properties-panel'
+  //     // },
+  //     additionalModules: [
+  //       // 左边工具栏以及节点
+  //       propertiesProviderModule
+  //       // 右边的工具栏
+  //       // propertiesPanelModule
+  //     ]
+  //     // moddleExtensions: {
+  //     //   camunda: camundaModdleDescriptor
+  //     // }
+  //   })
+  //   var eventBus = this.bpmnModeler.get('eventBus')
+  //   // you may hook into any of the following events
+  //   var events = [
+  //     // 'element.hover',
+  //     // 'element.out',
+  //     'element.click'
+  //     // 'element.dblclick',
+  //     // 'element.mousedown',
+  //     // 'element.mouseup'
+  //   ]
+  //   events.forEach(function (event) {
+  //     eventBus.on(event, function (e) {
+  //       // e.element = the model element
+  //       // e.gfx = the graphical element
+  //       console.log(event, 'on', e.element)
+  //     })
+  //   })
+  //   this.bpmnModeler.on('commandStack.changed', function () {
+  //     console.log('change')
+  //     // user modeled something or
+  //     // performed an undo/redo operation
+  //   })
+
+  //   this.bpmnModeler.on('element.changed', function (event) {
+  //     var element = event.element
+  //     console.log('element', element)
+  //     // the element was changed by the user
+  //   })
+  //   this.createNewDiagram(this.bpmnModeler)
+  // }
 }
 </script>
 
