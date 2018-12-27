@@ -31,7 +31,6 @@ export default {
   data () {
     return {
       select: false,
-      // transform对象
       transform: {
         scaleX: 1,
         scaleY: 1,
