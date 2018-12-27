@@ -1,22 +1,27 @@
 <template>
-  <div class="about">
-    <div class="bpmn">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="100"
-        height="100"
+  <div class="container">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="800"
+      height="300"
+      class="bpmn"
+    >
+      <g
+        :transform="`matrix(${transform.scaleX},0,0,${transform.scaleY},${transform.translateX},${transform.translateY})`"
       >
-        <title>一个圆</title>
-        <desc>一个圆</desc>
-        <circle cx="50" cy="50" r="50" style="stroke: yellow; fill: #fff"></circle>
-        <circle cx="25" cy="35" r="5" stroke="yellow" fill="yellow"></circle>
-        <circle cx="75" cy="35" r="5" stroke="yellow" fill="yellow"></circle>
-        <g id="whiskers">
-          <line x1="50" y1="60" x2="100" y2="40" stroke="yellow"></line>
-          <line x1="50" y1="60" x2="100" y2="80" stroke="yellow"></line>
-        </g>
-        <use xlink:href="#whiskers" transform="scale(-1 1) translate(-120 0)"></use>
-      </svg>
+        <circle cx="50" cy="50" r="20" style="stroke: #333; fill: #fff" class="circle"></circle>
+      </g>
+    </svg>
+    <div class="zoom-box">
+      <div class="zoom reset-zoom" @click="resetZoom(1)">
+        <img src="../assets/reset-zoom.svg"/>
+      </div>
+      <div class="zoom zoom-in" @click="zoomIn(1)">
+        <img src="../assets/zoom-in.svg"/>
+      </div>
+      <div class="zoom zoom-out" @click="zoomOut(1)">
+        <img src="../assets/zoom-out.svg"/>
+      </div>
     </div>
   </div>
 </template>
@@ -25,8 +30,14 @@
 export default {
   data () {
     return {
-      bpmn: null,
-      select: false
+      select: false,
+      // transform对象
+      transform: {
+        scaleX: 1,
+        scaleY: 1,
+        translateX: 0,
+        translateY: 0
+      }
     }
   },
   mounted () {
@@ -34,30 +45,80 @@ export default {
   },
   methods: {
     init () {
-      this.bpmn = document.querySelector('.bpmn')
-      this.bpmn.addEventListener('mousedown', function (evt) {
-        var disX = evt.clientX - this.offsetLeft
-        var disY = evt.clientY - this.offsetTop
-        document.onmousemove = (event) => {
-          this.style.top = event.clientY - disY + 'px'
-          this.style.left = event.clientX - disX + 'px'
-        }
-        document.onmouseup = (e) => {
-          document.onmousemove = document.onmouseup = null
-        }
+      this.handleMoveElement()
+    },
+    handleMoveElement () {
+      const VM = this
+      document.querySelector('.circle').addEventListener('mousedown', function (e) {
+        VM.select = true
+        var disX = e.clientX - this.cx.baseVal.value
+        var disY = e.clientY - this.cy.baseVal.value
+        document.addEventListener('mousemove', (evt) => {
+          if (!VM.select) return
+          this.setAttribute('cy', evt.clientY - disY)
+          this.setAttribute('cx', evt.clientX - disX)
+        })
+        document.addEventListener('mouseup', function () {
+          VM.select = false
+        })
       })
+    },
+    zoomIn (multiple = 1) {
+      this.transform.scaleX = this.transform.scaleX > 3
+        ? this.transform.scaleX
+        : this.transform.scaleX + (0.1 * multiple)
+      this.transform.scaleY = this.transform.scaleY > 3
+        ? this.transform.scaleY
+        : this.transform.scaleY + (0.1 * multiple)
+    },
+    // 缩小Svg
+    zoomOut (multiple = 1) {
+      this.transform.scaleX = this.transform.scaleX < 0.3
+        ? this.transform.scaleX
+        : this.transform.scaleX - (0.1 * multiple)
+      this.transform.scaleY = this.transform.scaleY < 0.3
+        ? this.transform.scaleY
+        : this.transform.scaleY - (0.1 * multiple)
+    },
+    resetZoom () {
+      this.transform.scaleX = this.transform.scaleY = 1
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .about {
+  * {
+    box-sizing: border-box;
+  }
+  .container {
     position: relative;
-    .bpmn {
+    width: 800px;
+    height: 300px;
+    border: 1px dashed #333;
+    .zoom-box {
       position: absolute;
-      top: 0;
-      left: 0;
+      bottom: 10px;
+      right: 10px;
+      border: 1px solid #999;
+      width: 30px;
+      height: 90px;
+      .zoom {
+        width: 29px;
+        height: 29px;
+        border-bottom: 1px solid #999;
+      }
+      .zoom-out {
+        border-bottom: none;
+      }
     }
+  }
+  .bpmn {
+    position: relative;
+  }
+  .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
   }
 </style>
