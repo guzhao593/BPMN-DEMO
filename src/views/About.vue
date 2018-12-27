@@ -2,19 +2,72 @@
   <div class="about">
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="100"
-      height="100"
+      width="800"
+      height="300"
+      class="bpmn"
     >
-      <title>一个圆</title>
-      <desc>一个圆</desc>
-      <circle cx="50" cy="50" r="50" style="stroke: yellow; fill: #fff"></circle>
-      <circle cx="25" cy="35" r="5" stroke="yellow" fill="yellow"></circle>
-      <circle cx="75" cy="35" r="5" stroke="yellow" fill="yellow"></circle>
-      <g id="whiskers">
-        <line x1="50" y1="60" x2="100" y2="40" stroke="yellow"></line>
-        <line x1="50" y1="60" x2="100" y2="80" stroke="yellow"></line>
+      <g>
+        <title>一个圆</title>
+        <desc>一个圆</desc>
+        <circle cx="50" cy="50" r="20" style="stroke: yellow; fill: #fff" class="circle" draggable="true"></circle>
       </g>
-      <use xlink:href="#whiskers" transform="scale(-1 1) translate(-120 0)"></use>
     </svg>
   </div>
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+      select: false
+    }
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    init () {
+      this.handleMoveElement()
+      // this.handleDraggableElement()
+    },
+    handleDraggableElement () {
+      document.querySelector('.circle').ondragstart = (e) => {
+        console.log(e)
+      }
+    },
+    handleMoveElement () {
+      const VM = this
+      document.querySelector('.circle').addEventListener('mousedown', function (e) {
+        VM.select = true
+        var disX = e.clientX - this.cx.baseVal.value
+        var disY = e.clientY - this.cy.baseVal.value
+        document.addEventListener('mousemove', (evt) => {
+          if (!VM.select) return
+          this.setAttribute('cy', evt.clientY - disY)
+          this.setAttribute('cx', evt.clientX - disX)
+        })
+        document.addEventListener('mouseup', function () {
+          VM.select = false
+        })
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  .about {
+    position: relative;
+    width: 800px;
+    height: 300px;
+    border: 1px dashed #333;
+  }
+  .bpmn {
+    position: relative;
+  }
+  .circle {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
