@@ -41,6 +41,7 @@
 
 <script>
 import createElement from './../utils/createElement.js'
+import $ from './../utils/methods.js'
 export default {
   data () {
     return {
@@ -94,7 +95,6 @@ export default {
       this.newConnection = true
     },
     mouseover (e) {
-      console.log(e.target, 'ddd')
       const dataId = e.target.getAttribute('data-id')
       if (dataId && this.type.includes(dataId.split('--')[0])) {
         document.getElementById(dataId).classList.toggle('target-hover')
@@ -111,12 +111,13 @@ export default {
       this.startMove = true
       if (e.target.getAttribute('data-id') && e.target.getAttribute('data-id').includes('startEvent')) {
         this.moveEl.el = document.getElementById(`${e.target.getAttribute('data-id')}`)
-        this.moveEl.oldTranslateX = this.moveEl.el.transform.baseVal[0].matrix.e
-        this.moveEl.oldTranslateY = this.moveEl.el.transform.baseVal[0].matrix.f
+        this.moveEl.oldTranslateX = $.getMatrix(this.moveEl.el).e
+        this.moveEl.oldTranslateY = $.getMatrix(this.moveEl.el).f
         this.moveEl.startX = e.clientX
         this.moveEl.startY = e.clientY
       }
       if (this.newConnection) {
+        if (!e.target.getAttribute('data-id')) return (this.startMove = false)
         createElement.connection(e, this)
         this.newElement.el = document.querySelector(`#${this.newElement.id}`)
       }
