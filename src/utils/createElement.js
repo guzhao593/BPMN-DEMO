@@ -29,7 +29,6 @@ const startEvent = (e, vm) => {
 
 const connection = (e, vm) => {
   const dataId = 'connection--' + Date.now()
-  // const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
   const g = document.createElementNS(NS, 'g')
   vm.newElement.id = g.id = dataId
   vm.newElement.startX = $.getMatrix($.getTargetEleGroup(e)).e + Number(e.target.getAttribute('x')) + Number(e.target.getAttribute('width') / 2)

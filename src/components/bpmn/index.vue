@@ -125,9 +125,17 @@ export default {
         this.moveEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX}, ${e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY})`)
       }
       if (this.startMove && this.newConnection) {
-        this.newElement.el.childNodes[0].setAttribute('points', `${this.newElement.startX}, ${this.newElement.startY}, ${e.clientX / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().left}, ${e.clientY / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().top}`)
+        this.newElement.el.childNodes[0].setAttribute('points', this.setPolylinePoints(e))
       }
     },
+    // 设置拆线各点的坐标
+    setPolylinePoints (e) {
+      const PX = e.clientX / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().left
+      const PY = e.clientY / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().top
+      const IP = $.getCircleIntersectionPoint(this.newElement.startX, this.newElement.startY, PX, PY, 20)
+      return `${IP.x}, ${IP.y}, ${PX}, ${PY}`
+    },
+
     mouseup () {
       this.startMove = false
       this.newConnection = false
