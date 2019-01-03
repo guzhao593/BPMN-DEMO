@@ -38,12 +38,27 @@ const connection = (e, vm) => {
   const polyline = document.createElementNS(NS, 'polyline')
   polyline.setAttribute('points', `${vm.newElement.startX}, ${vm.newElement.startY}`)
   polyline.setAttribute('data-id', dataId)
-  polyline.style.cssText = 'stroke: #333; stroke-width: 2'
+  polyline.style.cssText = 'stroke: #333; stroke-width: 1;stroke-dasharray: 2 2'
+  g.appendChild(polyline)
+  document.querySelector('.g-box').appendChild(g)
+}
+
+const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
+  const dataId = 'sequenceFlow--' + Date.now()
+  const g = document.createElementNS(NS, 'g')
+  vm.newElement.id = g.id = dataId
+  g.setAttribute('data-id', dataId)
+  g.setAttribute('transform', 'translate(0, 0)')
+  const polyline = document.createElementNS(NS, 'polyline')
+  polyline.setAttribute('points', $.setSequenceFlowPolylinePoints(vm.newElement.startX, vm.newElement.startY, ex, ey))
+  polyline.setAttribute('data-id', dataId)
+  polyline.style.cssText = 'stroke: #333; stroke-width: 2; fill: none'
   g.appendChild(polyline)
   document.querySelector('.g-box').appendChild(g)
 }
 
 export default {
   startEvent,
-  connection
+  connection,
+  sequenceFlow
 }

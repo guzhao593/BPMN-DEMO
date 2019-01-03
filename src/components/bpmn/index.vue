@@ -66,10 +66,17 @@ export default {
       startMove: false,
       bpmnEl: null,
       newConnection: false,
+      newConnectDataId: [],
       type: [
         'startEvent',
         'connection'
       ]
+    }
+  },
+  computed: {
+    // 连接线的终点元素ID
+    connectEndEleId () {
+      return this.newConnectDataId[1]
     }
   },
   mounted () {
@@ -78,6 +85,15 @@ export default {
   methods: {
     init () {
       this.bpmnEl = document.getElementById('bpmn')
+      this.initEvent()
+    },
+    initEvent () {
+      document.documentElement.addEventListener('mouseup', () => {
+        // 鼠标松开时，如果指针不在bpmn范围内，则删除连接线
+        if (this.newElement.el.getAttribute('data-id').includes('connection')) {
+          this.removeNewElement()
+        }
+      })
     },
     newStartEvent (type, e) {
       this.new = true
@@ -89,14 +105,16 @@ export default {
     newConnect (e) {
       this.newConnection = true
     },
-    mouseover (e) {
-      const dataId = e.target.getAttribute('data-id')
-      if (dataId && this.type.includes(dataId.split('--')[0])) {
-        document.getElementById(dataId).classList.toggle('target-hover')
+    // 保存连接终点的dataId
+    handleNewConnectDataId (dataId) {
+      if (this.newConnection) {
+        this.newConnectDataId.length >= 2 && this.newConnectDataId.pop()
+        this.newConnectDataId.unshift(dataId)
       }
     },
-    mouseout (e) {
-      const dataId = e.target.getAttribute('data-id')
+    mouseover (e) {
+      const dataId = $.getTargetDataId(e)
+      this.handleNewConnectDataId(dataId)
       if (dataId && this.type.includes(dataId.split('--')[0])) {
         document.getElementById(dataId).classList.toggle('target-hover')
       }
@@ -125,18 +143,30 @@ export default {
         this.moveEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX}, ${e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY})`)
       }
       if (this.startMove && this.newConnection) {
-        this.newElement.el.childNodes[0].setAttribute('points', this.setPolylinePoints(e))
+        this.newElement.el.childNodes[0].setAttribute('points', this.setConnectionPolylinePoints(e))
       }
     },
+    removeNewElement () {
+      this.bpmnEl.children[0].removeChild(this.newElement.el)
+    },
     // 设置拆线各点的坐标
-    setPolylinePoints (e) {
+    setConnectionPolylinePoints (e) {
       const PX = e.clientX / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().left
       const PY = e.clientY / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().top
       const IP = $.getCircleIntersectionPoint(this.newElement.startX, this.newElement.startY, PX, PY, 20)
       return `${IP.x}, ${IP.y}, ${PX}, ${PY}`
     },
 
-    mouseup () {
+    mouseup (e) {
+      if (this.newConnection) {
+        if (this.connectEndEleId) {
+          const endCenterPoint = $.getCenterPoint(this.connectEndEleId)
+          console.log(endCenterPoint)
+          createElement.sequenceFlow(e, this, endCenterPoint)
+        } else {
+          this.removeNewElement()
+        }
+      }
       this.startMove = false
       this.newConnection = false
       this.new = false
