@@ -31,6 +31,7 @@ const getCircleCenterPoint = (id) => {
  * @param {*} ex 终点点中心x坐标
  * @param {*} ey 终点点中心y坐标
  * @param {*} r  半径
+ * @return {String} point
  */
 const setSequenceFlowPolylinePoints = (sx, sy, ex, ey, r = 20) => {
   const MIX_DISTANCE = 4 * r
@@ -76,6 +77,7 @@ const setSequenceFlowPolylinePoints = (sx, sy, ex, ey, r = 20) => {
  * @param {*} px 鼠标 x坐标
  * @param {*} py 鼠标 y坐标
  * @param {*} r  圆半径
+ * @return {Object} 交点坐标
  */
 const getCircleIntersectionPoint = (ox, oy, px, py, r) => {
   const W = px - ox
