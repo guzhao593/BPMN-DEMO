@@ -163,11 +163,15 @@ export default {
     },
     mousemove (e) {
       if (this.createNew) {
-        this.newEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.newEl.startX}, ${e.clientY / this.transform.scaleX - this.newEl.startY})`)
+        const TX = e.clientX / this.transform.scaleX - this.newEl.startX
+        const TY = e.clientY / this.transform.scaleX - this.newEl.startY
+        this.newEl.el.setAttribute('transform', `translate(${TX}, ${TY})`)
         this.listenMoveEleCenterCoordinate(this.newEl.id)
       }
       if (this.move && this.moveEl.el && !this.connetion) {
-        this.moveEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX}, ${e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY})`)
+        const TX = e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX
+        const TY = e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY
+        this.moveEl.el.setAttribute('transform', `translate(${TX}, ${TY})`)
         this.listenMoveEleCenterCoordinate(this.moveEl.id)
       }
       if (this.move && this.connetion) {
@@ -182,7 +186,8 @@ export default {
           create.sequenceFlow(e, this, endCenterPoint)
         }
         this.removeNewElement()
-      } else if (this.move) {
+      }
+      if (this.move) {
         $.saveElementCenterCoordinate(this, this.moveEl.id)
       }
       this.resetStatus()

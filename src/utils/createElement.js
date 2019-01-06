@@ -1,7 +1,7 @@
 import $ from './methods'
-
+// 命名空间
 const NS = 'http://www.w3.org/2000/svg'
-
+// 创建组元素
 const createGroup = (vm, dataId) => {
   const g = document.createElementNS(NS, 'g')
   vm.newEl.id = g.id = dataId
@@ -11,11 +11,11 @@ const createGroup = (vm, dataId) => {
   })
   return g
 }
-
+// 生成随机的dataId
 const generateDataId = (type) => {
   return `${type}--${Date.now()}`
 }
-
+// 创建起始事件图标
 const startEvent = (e, vm) => {
   const dataId = generateDataId('startEvent')
   const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
@@ -45,7 +45,7 @@ const startEvent = (e, vm) => {
   document.querySelector('.g-box').appendChild(g)
   return g
 }
-
+// 创建连接线图标
 const connection = (e, vm) => {
   const dataId = generateDataId('connection')
   const g = createGroup(vm, dataId)
@@ -62,7 +62,7 @@ const connection = (e, vm) => {
   document.querySelector('.g-box').appendChild(g)
   return g
 }
-
+// 创建序列线图标
 const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
   const dataId = generateDataId('sequenceFlow')
   const g = createGroup(vm, dataId)
@@ -78,7 +78,7 @@ const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
   $.recordSequenceFlowInfo(vm, dataId)
   return g
 }
-
+// 创建定位线图标
 const locationLine = (x1, y1, x2, y2) => {
   const dataId = generateDataId('locationLine')
   const line = document.createElementNS(NS, 'line')

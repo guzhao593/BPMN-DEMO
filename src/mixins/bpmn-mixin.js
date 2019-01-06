@@ -9,6 +9,7 @@ export default {
     }
   },
   methods: {
+    // 移动图标时序列线跟随一起变化
     changeSequenceFlow (id, {cx, cy}) {
       Object.entries(this.allSequenceFlowInfo).forEach(([sid, item]) => {
         if (item.start.id === id) {
@@ -23,21 +24,29 @@ export default {
         }
       })
     },
+    // 监听移动坐标并处理
     listenMoveEleCenterCoordinate (id) {
       let { cx, cy } = $.saveElementCenterCoordinate(this, id)
       let flag = {x: null, y: null}
       
       Object.entries(this.elementCenterCoordinate).forEach(([key, value]) => {
+        // 相隔距离
+        const GAP = 10
         if (key !== id) {
-          if (Math.abs(value.cx - cx) < 10) {
+          if (Math.abs(value.cx - cx) < GAP) {
             flag.x = value.cx
           }
-          if (Math.abs(value.cy - cy) < 10) {
+          if (Math.abs(value.cy - cy) < GAP) {
             flag.y = value.cy
           }
         }
       })
+      // 移动图标时序列线跟随一起变化
       this.changeSequenceFlow(id, {cx: flag.x || cx, cy: flag.y || cy})
+      // 处理定位线
+      this.handleLocationLine(flag)
+    },
+    handleLocationLine (flag) {
       if (flag.x) {
         $.setElementTransform(id, 'x', flag.x)
         this.locationLine.yEl.setAttribute('x1', flag.x)
@@ -55,6 +64,7 @@ export default {
         this.locationLine.xEl.style.display = 'none'
       }
     },
+    // 当操作完成时，清除状态
     resetStatus () {
       this.move = false
       this.connetion = false
@@ -71,6 +81,7 @@ export default {
       const IP = $.getCircleIntersectionPoint(this.newEl.startX, this.newEl.startY, PX, PY, 20)
       return `${IP.x}, ${IP.y}, ${PX}, ${PY}`
     },
+    // 删除新元素并清除状态
     removeNewElement () {
       this.newEl.el && this.bpmnEl.children[0].removeChild(this.newEl.el)
       this.resetStatus()

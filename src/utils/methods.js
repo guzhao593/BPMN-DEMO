@@ -1,7 +1,16 @@
+/**
+ * 获取目标对象的data-id
+ * @param {Ojbect} e 事件源对象
+ * @return {String} dataId
+ */
 const getTargetDataId = (e) => {
   return e.target.getAttribute('data-id')
 }
-
+/**
+ * 获取目标元素的组元素
+ * @param {Ojbect} e 事件源对象
+ * @return {element} 目标元素的组元素
+ */
 const getTargetEleGroup = (e) => {
   return document.getElementById(getTargetDataId(e))
 }
@@ -9,17 +18,30 @@ const getTargetEleGroup = (e) => {
 const getChildHasDataBox = (id) => {
   return document.getElementById(id).querySelector(`[data-box=${id}]`)
 }
+/**
+ * 获取元素的矩阵信息
+ * @param {element} ele 元素
+ * @return {Ojbect} 元素的矩阵信息
+ */
 const getMatrix = (ele) => {
   return ele.transform.baseVal[0].matrix
 }
-
+/**
+ * 获取元素的中心点坐标
+ * @param {id} id 元素id
+ * @return {Ojbect} 元素的中心点坐标
+ */
 const getCenterPoint = (id) => {
   switch (true) {
     case id.includes('startEvent'):
       return getCircleCenterPoint(id)
   }
 }
-
+/**
+ * 获取圆的中心点坐标
+ * @param {id} id 元素id
+ * @return {Ojbect} 元素的中心点坐标
+ */
 const getCircleCenterPoint = (id) => {
   const el = document.getElementById(id)
   return {
@@ -27,7 +49,12 @@ const getCircleCenterPoint = (id) => {
     y: getMatrix(el).f + Number(getChildHasDataBox(id).getAttribute('y')) + Number(getChildHasDataBox(id).getAttribute('height') / 2)
   }
 }
-
+/**
+ * 设置元素的transform属性
+ * @param {String} id 元素id
+ * @param {String} attr 属性 x或y
+ * @param {Number} value 值
+ */
 const setElementTransform = (id, attr, value) => {
   const el = document.getElementById(id)
   if (attr === 'x') {
@@ -136,6 +163,11 @@ const saveElementCenterCoordinate = (vm, id) => {
 const deleteElementCenterCoordinate = (vm, id, cx, cy) => {
   delete vm.elementCenterCoordinate[id]
 }
+/**
+ * 记录序列号的信息
+ * @param {*} vm  组件实例
+ * @param {*} dataId 图标id
+ */
 const recordSequenceFlowInfo = (vm, dataId) => {
   const startCoordinate = getCenterPoint(vm.connectStartEleId)
   const endCoordinate = getCenterPoint(vm.connectEndEleId)
