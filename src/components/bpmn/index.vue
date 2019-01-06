@@ -24,19 +24,19 @@
     </svg>
 
     <div class="tool-box">
-      <div class="tool" @mousedown="newConnect">
+      <div class="tool" @click="newConnect">
         <img src="../../assets/tool/connection.svg"/>
       </div>
-      <div class="tool" @mousedown="createNewElement('startEvent', $event)">
+      <div class="tool" @click="createNewElement('startEvent', $event)">
         <img src="../../assets/tool/start-event.svg"/>
       </div>
-      <div class="tool" @mousedown="createNewElement('endEvent', $event)">
+      <div class="tool" @click="createNewElement('endEvent', $event)">
         <img src="../../assets/tool/end-event.svg"/>
       </div>
-      <div class="tool" @mousedown="createNewElement('gateway', $event)">
+      <div class="tool" @click="createNewElement('gateway', $event)">
         <img src="../../assets/tool/gateway.svg"/>
       </div>
-      <div class="tool" @mousedown="createNewElement('task', $event)">
+      <div class="tool" @click="createNewElement('task', $event)">
         <img src="../../assets/tool/task.svg"/>
       </div>
     </div>
@@ -135,12 +135,14 @@ export default {
       this.locationLine.xEl = create.locationLine(0, 0, this.bpmnEl.getBoundingClientRect().width, 0)
     },
     createNewElement (type, e) {
+      this.resetStatus()
       this.createNew = true
       this.newEl.startX = e.clientX / this.transform.scaleX
       this.newEl.startY = e.clientY / this.transform.scaleX
       this.newEl.el = create[type](e, this)
     },
     newConnect (e) {
+      this.resetStatus()
       this.connetion = true
     },
     mouseover (e) {
