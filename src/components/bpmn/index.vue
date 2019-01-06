@@ -3,8 +3,8 @@
     <svg
       xmlns="http://www.w3.org/2000/svg"
       id="bpmn"
-      width="800"
-      height="300"
+      width="100%"
+      height="500"
       @mousedown="mousedown"
       @mousemove="mousemove"
       @mouseup="mouseup"
@@ -34,10 +34,12 @@
 import Zoom from './zoom'
 import createElement from 'utils/createElement.js'
 import $ from 'utils/methods.js'
+import BpmnMixin from '@/mixins/bpmn-mixin'
 export default {
   components: {
     Zoom
   },
+  mixins: [BpmnMixin],
   data () {
     return {
       select: false,
@@ -56,6 +58,7 @@ export default {
       },
       moveEl: {
         el: '',
+        id: '',
         startX: 0,
         startY: 0
       },
@@ -63,6 +66,7 @@ export default {
         startX: 0,
         startY: 0
       },
+      elementCenterCoordinate: {},
       startMove: false,
       bpmnEl: null,
       newConnection: false,
@@ -88,9 +92,9 @@ export default {
       this.initEvent()
     },
     initEvent () {
-      document.documentElement.addEventListener('mouseup', () => {
+      document.documentElement.addEventListener('mouseup', (e) => {
         // 鼠标松开时，如果指针不在bpmn范围内，则删除连接线
-        if (this.newElement.el.getAttribute('data-id').includes('connection')) {
+        if (this.newConnection && this.newElement.el) {
           this.removeNewElement()
         }
       })
@@ -105,13 +109,6 @@ export default {
     newConnect (e) {
       this.newConnection = true
     },
-    // 保存连接终点的dataId
-    handleNewConnectDataId (dataId) {
-      if (this.newConnection) {
-        this.newConnectDataId.length >= 2 && this.newConnectDataId.pop()
-        this.newConnectDataId.unshift(dataId)
-      }
-    },
     mouseover (e) {
       const dataId = $.getTargetDataId(e)
       this.handleNewConnectDataId(dataId)
@@ -120,57 +117,53 @@ export default {
       }
     },
     mousedown (e) {
-      if (this.new) return (this.new = false)
+      const DATA_ID = $.getTargetDataId(e)
+      if (!DATA_ID) return
+      if (this.new) {
+        $.saveElementCenterCoordinate(this, this.newElement.id)
+        this.new = false
+        return
+      }
       this.startMove = true
-      if (e.target.getAttribute('data-id') && e.target.getAttribute('data-id').includes('startEvent')) {
-        this.moveEl.el = document.getElementById(`${e.target.getAttribute('data-id')}`)
+      if (DATA_ID && DATA_ID.includes('startEvent')) {
+        this.moveEl.el = document.getElementById(DATA_ID)
+        this.moveEl.id = DATA_ID
         this.moveEl.oldTranslateX = $.getMatrix(this.moveEl.el).e
         this.moveEl.oldTranslateY = $.getMatrix(this.moveEl.el).f
         this.moveEl.startX = e.clientX
         this.moveEl.startY = e.clientY
       }
       if (this.newConnection) {
-        if (!e.target.getAttribute('data-id')) return (this.startMove = false)
+        if (!DATA_ID) return (this.startMove = false)
         createElement.connection(e, this)
-        this.newElement.el = document.querySelector(`#${this.newElement.id}`)
+        this.newElement.el = document.getElementById(this.newElement.id)
       }
     },
     mousemove (e) {
       if (this.new) {
         this.newElement.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.newElement.startX}, ${e.clientY / this.transform.scaleX - this.newElement.startY})`)
+        this.listenMoveEleCenterCoordinate(this.newElement.id)
       }
       if (this.startMove && this.moveEl.el && !this.newConnection) {
         this.moveEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX}, ${e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY})`)
+        this.listenMoveEleCenterCoordinate(this.moveEl.id)
       }
       if (this.startMove && this.newConnection) {
         this.newElement.el.childNodes[0].setAttribute('points', this.setConnectionPolylinePoints(e))
       }
-    },
-    removeNewElement () {
-      this.bpmnEl.children[0].removeChild(this.newElement.el)
-    },
-    // 设置拆线各点的坐标
-    setConnectionPolylinePoints (e) {
-      const PX = e.clientX / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().left
-      const PY = e.clientY / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().top
-      const IP = $.getCircleIntersectionPoint(this.newElement.startX, this.newElement.startY, PX, PY, 20)
-      return `${IP.x}, ${IP.y}, ${PX}, ${PY}`
     },
 
     mouseup (e) {
       if (this.newConnection) {
         if (this.connectEndEleId) {
           const endCenterPoint = $.getCenterPoint(this.connectEndEleId)
-          console.log(endCenterPoint)
           createElement.sequenceFlow(e, this, endCenterPoint)
-        } else {
-          this.removeNewElement()
         }
+        this.removeNewElement()
+      } else if (this.startMove) {
+        $.saveElementCenterCoordinate(this, this.moveEl.id)
       }
-      this.startMove = false
-      this.newConnection = false
-      this.new = false
-      this.moveEl.el = null
+      this.resetStatus()
     }
   }
 }
@@ -182,8 +175,8 @@ export default {
   }
   .container {
     position: relative;
-    width: 800px;
-    height: 300px;
+    width: 100%;
+    height: 100%;
     border: 1px dashed #333;
     .tool-box {
       position: absolute;

@@ -90,6 +90,30 @@ const getCircleIntersectionPoint = (ox, oy, px, py, r) => {
     y: oy + SIN * r
   }
 }
+/**
+ * 保存已新建的图标的中心坐标
+ * @param {*} vm 组件实例
+ * @param {*} id 图标id
+ */
+const saveElementCenterCoordinate = (vm, id) => {
+  const center = getCenterPoint(id)
+  vm.elementCenterCoordinate[id] = {
+    cx: center.x,
+    cy: center.y
+  }
+  return vm.elementCenterCoordinate[id]
+}
+
+/**
+ * 删除已新建的图标的中心坐标
+ * @param {*} vm 组件实例
+ * @param {*} id 图标id
+ * @param {*} cx 图标中心X坐标
+ * @param {*} cy 图标中心Y坐标
+ */
+const deleteElementCenterCoordinate = (vm, id, cx, cy) => {
+  delete vm.elementCenterCoordinate[id]
+}
 
 export default {
   getTargetDataId,
@@ -98,5 +122,7 @@ export default {
   getCircleIntersectionPoint,
   getCenterPoint,
   getCircleCenterPoint,
-  setSequenceFlowPolylinePoints
+  setSequenceFlowPolylinePoints,
+  saveElementCenterCoordinate,
+  deleteElementCenterCoordinate
 }

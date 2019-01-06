@@ -4,7 +4,8 @@ module.exports = {
   devServer: {
     open: true,
     hot: true,
-    hotOnly: true
+    hotOnly: true,
+    disableHostCheck: true
   },
   chainWebpack: (config) => {
     config.resolve.alias
