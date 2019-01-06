@@ -37,6 +37,16 @@ const setElementTransform = (id, attr, value) => {
   }
 }
 /**
+ * 批量设置元素的属性
+ * @param {Node} el 要设置的元素
+ * @param {Object} attrs 属性及属性值
+ */
+const setAttr = (el, attrs) => {
+  Object.entries(attrs).forEach(([attr, value]) => {
+    el.setAttribute(attr, value)
+  })
+}
+/**
  * 计算SequenceFlow各个point
  * @param {*} sx 起点中心x坐标
  * @param {*} sy 起点中心y坐标
@@ -149,6 +159,7 @@ export default {
   getCircleIntersectionPoint,
   getCenterPoint,
   getCircleCenterPoint,
+  setAttr,
   setSequenceFlowPolylinePoints,
   saveElementCenterCoordinate,
   deleteElementCenterCoordinate,

@@ -1,5 +1,4 @@
 import $ from 'utils/methods'
-import createElement from 'utils/createElement'
 export default {
   data () {
     return {
@@ -57,11 +56,11 @@ export default {
       }
     },
     resetStatus () {
-      this.startMove = false
-      this.newConnection = false
-      this.new = false
+      this.move = false
+      this.connetion = false
+      this.createNew = false
       this.moveEl.el = null
-      this.newElement.el = null
+      this.newEl.el = null
       this.locationLine.yEl.style.display = 'none'
       this.locationLine.xEl.style.display = 'none'
     },
@@ -69,16 +68,16 @@ export default {
     setConnectionPolylinePoints (e) {
       const PX = e.clientX / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().left
       const PY = e.clientY / this.transform.scaleX - this.bpmnEl.getBoundingClientRect().top
-      const IP = $.getCircleIntersectionPoint(this.newElement.startX, this.newElement.startY, PX, PY, 20)
+      const IP = $.getCircleIntersectionPoint(this.newEl.startX, this.newEl.startY, PX, PY, 20)
       return `${IP.x}, ${IP.y}, ${PX}, ${PY}`
     },
     removeNewElement () {
-      this.newElement.el && this.bpmnEl.children[0].removeChild(this.newElement.el)
+      this.newEl.el && this.bpmnEl.children[0].removeChild(this.newEl.el)
       this.resetStatus()
     },
     // 保存连接终点的dataId
     handleNewConnectDataId (dataId) {
-      if (this.newConnection) {
+      if (this.connetion) {
         this.newConnectDataId.length >= 2 && this.newConnectDataId.pop()
         this.newConnectDataId.unshift(dataId)
       }

@@ -27,7 +27,7 @@
       <div class="tool" @mousedown="newConnect">
         <img src="../../assets/tool/connection.svg"/>
       </div>
-      <div class="tool" @mousedown="newStartEvent('startEvent', $event)">
+      <div class="tool" @mousedown="createNewElement('startEvent', $event)">
         <img src="../../assets/tool/start-event.svg"/>
       </div>
     </div>
@@ -38,7 +38,7 @@
 
 <script>
 import Zoom from './zoom'
-import createElement from 'utils/createElement.js'
+import create from 'utils/createElement.js'
 import $ from 'utils/methods.js'
 import BpmnMixin from '@/mixins/bpmn-mixin'
 export default {
@@ -48,36 +48,46 @@ export default {
   mixins: [BpmnMixin],
   data () {
     return {
-      select: false,
       transform: {
         scaleX: 1,
         scaleY: 1,
         translateX: 0,
         translateY: 0
       },
-      new: false,
-      newElement: {
+      // 新建元素
+      newEl: {
         el: '',
         id: '',
         startX: 0,
         startY: 0
       },
+      // 移动元素
       moveEl: {
         el: '',
         id: '',
         startX: 0,
         startY: 0
       },
+      // 连接元素
       connectEl: {
         startX: 0,
         startY: 0
       },
+      // 所有序列线信息
       allSequenceFlowInfo: {},
+      // 所有图标中心坐标
       elementCenterCoordinate: {},
-      startMove: false,
+      // bpmn图标
       bpmnEl: null,
-      newConnection: false,
+      // 创建新元素状态
+      createNew: false,
+      // 移动状态
+      move: false,
+      // 连接线状态
+      connetion: false,
+      // 连接线起点元素id
       connectStartEleId: null,
+      // 鼠标经过的最后两个元素dataId，最后一个为连接线的id,倒数第二个为最后经过的元素id
       newConnectDataId: [],
       type: [
         'startEvent',
@@ -98,29 +108,29 @@ export default {
     init () {
       this.bpmnEl = document.getElementById('bpmn')
       this.initEvent()
+      // 初始化定位线
       this.initLocationLine()
     },
     initEvent () {
       document.documentElement.addEventListener('mouseup', (e) => {
         // 鼠标松开时，如果指针不在bpmn范围内，则删除连接线
-        if (this.newConnection && this.newElement.el) {
+        if (this.connetion && this.newEl.el) {
           this.removeNewElement()
         }
       })
     },
     initLocationLine () {
-      this.locationLine.yEl = createElement.locationLine(0, 0, 0, this.bpmnEl.getBoundingClientRect().height)
-      this.locationLine.xEl = createElement.locationLine(0, 0, this.bpmnEl.getBoundingClientRect().width, 0)
+      this.locationLine.yEl = create.locationLine(0, 0, 0, this.bpmnEl.getBoundingClientRect().height)
+      this.locationLine.xEl = create.locationLine(0, 0, this.bpmnEl.getBoundingClientRect().width, 0)
     },
-    newStartEvent (type, e) {
-      this.new = true
-      this.newElement.startX = e.clientX / this.transform.scaleX
-      this.newElement.startY = e.clientY / this.transform.scaleX
-      createElement[type](e, this)
-      this.newElement.el = document.getElementById(this.newElement.id)
+    createNewElement (type, e) {
+      this.createNew = true
+      this.newEl.startX = e.clientX / this.transform.scaleX
+      this.newEl.startY = e.clientY / this.transform.scaleX
+      this.newEl.el = create[type](e, this)
     },
     newConnect (e) {
-      this.newConnection = true
+      this.connetion = true
     },
     mouseover (e) {
       const dataId = $.getTargetDataId(e)
@@ -132,12 +142,12 @@ export default {
     mousedown (e) {
       const DATA_ID = $.getTargetDataId(e)
       if (!DATA_ID) return
-      if (this.new) {
-        $.saveElementCenterCoordinate(this, this.newElement.id)
-        this.new = false
+      if (this.createNew) {
+        $.saveElementCenterCoordinate(this, this.newEl.id)
+        this.createNew = false
         return
       }
-      this.startMove = true
+      this.move = true
       if (DATA_ID && DATA_ID.includes('startEvent')) {
         this.moveEl.el = document.getElementById(DATA_ID)
         this.moveEl.id = DATA_ID
@@ -146,35 +156,33 @@ export default {
         this.moveEl.startX = e.clientX
         this.moveEl.startY = e.clientY
       }
-      if (this.newConnection) {
-        if (!DATA_ID) return (this.startMove = false)
-        createElement.connection(e, this)
+      if (this.connetion) {
+        this.newEl.el = create.connection(e, this)
         this.connectStartEleId = $.getTargetDataId(e)
-        this.newElement.el = document.getElementById(this.newElement.id)
       }
     },
     mousemove (e) {
-      if (this.new) {
-        this.newElement.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.newElement.startX}, ${e.clientY / this.transform.scaleX - this.newElement.startY})`)
-        this.listenMoveEleCenterCoordinate(this.newElement.id)
+      if (this.createNew) {
+        this.newEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.newEl.startX}, ${e.clientY / this.transform.scaleX - this.newEl.startY})`)
+        this.listenMoveEleCenterCoordinate(this.newEl.id)
       }
-      if (this.startMove && this.moveEl.el && !this.newConnection) {
+      if (this.move && this.moveEl.el && !this.connetion) {
         this.moveEl.el.setAttribute('transform', `translate(${e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX}, ${e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY})`)
         this.listenMoveEleCenterCoordinate(this.moveEl.id)
       }
-      if (this.startMove && this.newConnection) {
-        this.newElement.el.childNodes[0].setAttribute('points', this.setConnectionPolylinePoints(e))
+      if (this.move && this.connetion) {
+        this.newEl.el.childNodes[0].setAttribute('points', this.setConnectionPolylinePoints(e))
       }
     },
 
     mouseup (e) {
-      if (this.newConnection) {
+      if (this.connetion) {
         if (this.connectEndEleId) {
           const endCenterPoint = $.getCenterPoint(this.connectEndEleId)
-          createElement.sequenceFlow(e, this, endCenterPoint)
+          create.sequenceFlow(e, this, endCenterPoint)
         }
         this.removeNewElement()
-      } else if (this.startMove) {
+      } else if (this.move) {
         $.saveElementCenterCoordinate(this, this.moveEl.id)
       }
       this.resetStatus()
