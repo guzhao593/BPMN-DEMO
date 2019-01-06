@@ -44,9 +44,9 @@ export default {
       // 移动图标时序列线跟随一起变化
       this.changeSequenceFlow(id, {cx: flag.x || cx, cy: flag.y || cy})
       // 处理定位线
-      this.handleLocationLine(flag)
+      this.handleLocationLine(flag, id)
     },
-    handleLocationLine (flag) {
+    handleLocationLine (flag, id) {
       if (flag.x) {
         $.setElementTransform(id, 'x', flag.x)
         this.locationLine.yEl.setAttribute('x1', flag.x)
