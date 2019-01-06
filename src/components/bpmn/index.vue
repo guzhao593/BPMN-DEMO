@@ -170,7 +170,6 @@ export default {
       if (this.connetion) {
         this.newEl.el = create.connection(e, this)
         this.connectStartEleId = $.getTargetDataId(e)
-        return
       }
     },
     mousemove (e) {

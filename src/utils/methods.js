@@ -32,23 +32,13 @@ const getMatrix = (ele) => {
  * @return {Ojbect} 元素的中心点坐标
  */
 const getCenterPoint = (id) => {
-  switch (true) {
-    case id.includes('startEvent'):
-      return getCircleCenterPoint(id)
-  }
-}
-/**
- * 获取圆的中心点坐标
- * @param {id} id 元素id
- * @return {Ojbect} 元素的中心点坐标
- */
-const getCircleCenterPoint = (id) => {
   const el = document.getElementById(id)
   return {
     x: getMatrix(el).e + Number(getChildHasDataBox(id).getAttribute('x')) + Number(getChildHasDataBox(id).getAttribute('width') / 2),
     y: getMatrix(el).f + Number(getChildHasDataBox(id).getAttribute('y')) + Number(getChildHasDataBox(id).getAttribute('height') / 2)
   }
 }
+
 /**
  * 设置元素的transform属性
  * @param {String} id 元素id
@@ -79,40 +69,41 @@ const setAttr = (el, attrs) => {
  * @param {*} sy 起点中心y坐标
  * @param {*} ex 终点点中心x坐标
  * @param {*} ey 终点点中心y坐标
- * @param {*} r  半径
+ * @param {*} rx  x轴方向半径
+ * @param {*} ry  y轴方向半径
  * @return {String} point
  */
-const setSequenceFlowPolylinePoints = (sx, sy, ex, ey, r = 20) => {
-  const MIX_DISTANCE = 4 * r
+const setSequenceFlowPoints = (sx, sy, ex, ey, start = { rx: 20, ry: 20 }, end = { rx: 20, ry: 20 }) => {
+  const MIX_DISTANCE = 4 * 20
   let p1, p2, p3, p4
   const func = () => {
     if (sy <= ey) {
-      p1 = { x: sx, y: sy + r }
+      p1 = { x: sx, y: sy + start.ry }
       p2 = { x: sx, y: sy + (ey - sy) / 2 }
       p3 = { x: ex, y: sy + (ey - sy) / 2 }
-      p4 = { x: ex, y: ey - r }
+      p4 = { x: ex, y: ey - end.ry }
     } else {
-      p1 = { x: sx, y: sy - r }
+      p1 = { x: sx, y: sy - start.ry }
       p2 = { x: sx, y: sy - (sy - ey) / 2 }
       p3 = { x: ex, y: sy - (sy - ey) / 2 }
-      p4 = { x: ex, y: ey + r }
+      p4 = { x: ex, y: ey + end.ry }
     }
   }
   if (sx >= ex) {
     if (sx - ex > MIX_DISTANCE) {
-      p1 = { x: sx - r, y: sy }
+      p1 = { x: sx - start.rx, y: sy }
       p2 = { x: sx - (sx - ex) / 2, y: sy }
       p3 = { x: sx - (sx - ex) / 2, y: ey }
-      p4 = { x: ex + r, y: ey }
+      p4 = { x: ex + end.rx, y: ey }
     } else {
       func()
     }
   } else {
     if (ex - sx > MIX_DISTANCE) {
-      p1 = { x: sx + r, y: sy }
+      p1 = { x: sx + start.rx, y: sy }
       p2 = { x: sx + (ex - sx) / 2, y: sy }
       p3 = { x: sx + (ex - sx) / 2, y: ey }
-      p4 = { x: ex - r, y: ey }
+      p4 = { x: ex - end.rx, y: ey }
     } else {
       func()
     }
@@ -184,17 +175,39 @@ const recordSequenceFlowInfo = (vm, dataId) => {
     }
   }
 }
+const getEleRxAndRy = (id) => {
+  const EL = document.getElementById(id).childNodes[0]
+  switch (true) {
+    case id.includes('startEvent'):
+    case id.includes('endEvent'):
+      const R = +EL.getAttribute('r')
+      return {
+        rx: R,
+        ry: R
+      }
+    case id.includes('task'):
+      return {
+        rx: +EL.getAttribute('width') / 2,
+        ry: +EL.getAttribute('height') / 2
+      }
+    case id.includes('gateway'):
+      return {
+        rx: +EL.getAttribute('width') / 2,
+        ry: +EL.getAttribute('height') / 2
+      }
+  }
+}
 export default {
   getTargetDataId,
   getTargetEleGroup,
   getMatrix,
   getCircleIntersectionPoint,
   getCenterPoint,
-  getCircleCenterPoint,
   setAttr,
-  setSequenceFlowPolylinePoints,
+  setSequenceFlowPoints,
   saveElementCenterCoordinate,
   deleteElementCenterCoordinate,
   setElementTransform,
-  recordSequenceFlowInfo
+  recordSequenceFlowInfo,
+  getEleRxAndRy
 }

@@ -15,9 +15,42 @@ const createGroup = (vm, dataId) => {
 const generateDataId = (type) => {
   return `${type}--${Date.now()}`
 }
+const task = (e, vm) => {
+  const dataId = generateDataId('task')
+  const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
+  const g = createGroup(vm, dataId)
+  const task = document.createElementNS(NS, 'rect')
+  $.setAttr(task, {
+    'data-id': dataId,
+    x: e.clientX / vm.transform.scaleX - bpmnElOffset.left - 40,
+    y: e.clientY / vm.transform.scaleX - bpmnElOffset.top - 25,
+    width: 80,
+    height: 50,
+    rx: 5,
+    ry: 5
+  })
+  task.style.cssText = 'stroke: #333; fill: #fff'
+  g.appendChild(task)
+  const rect = document.createElementNS(NS, 'rect')
+  $.setAttr(rect, {
+    'data-id': dataId,
+    'data-box': dataId,
+    x: e.clientX / vm.transform.scaleX - bpmnElOffset.left - 45,
+    y: e.clientY / vm.transform.scaleX - bpmnElOffset.top - 30,
+    width: 90,
+    height: 60
+  })
+  rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges'
+  g.appendChild(rect)
+  document.querySelector('.g-box').appendChild(g)
+  return g
+}
+const gateway = (e, vm) => {
+
+}
 // 创建起始事件图标
-const startEvent = (e, vm) => {
-  const dataId = generateDataId('startEvent')
+const creatEvent = (type, e, vm) => {
+  const dataId = generateDataId(type)
   const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
   const g = createGroup(vm, dataId)
 
@@ -29,6 +62,7 @@ const startEvent = (e, vm) => {
     r: 20
   })
   circle.style.cssText = 'stroke: #333; fill: #fff'
+  circle.style.strokeWidth = type === 'startEvent' ? 2 : 5
   g.appendChild(circle)
 
   const rect = document.createElementNS(NS, 'rect')
@@ -44,6 +78,14 @@ const startEvent = (e, vm) => {
   g.appendChild(rect)
   document.querySelector('.g-box').appendChild(g)
   return g
+}
+
+const startEvent = (e, vm) => {
+  return creatEvent('startEvent', e, vm)
+}
+
+const endEvent = (e, vm) => {
+  return creatEvent('endEvent', e, vm)
 }
 // 创建连接线图标
 const connection = (e, vm) => {
@@ -68,7 +110,7 @@ const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
   const g = createGroup(vm, dataId)
   const polyline = document.createElementNS(NS, 'polyline')
   $.setAttr(polyline, {
-    points: $.setSequenceFlowPolylinePoints(vm.newEl.startX, vm.newEl.startY, ex, ey),
+    points: $.setSequenceFlowPoints(vm.newEl.startX, vm.newEl.startY, ex, ey, $.getEleRxAndRy(vm.connectStartEleId), $.getEleRxAndRy(vm.connectEndEleId)),
     'data-id': dataId
   })
   polyline.style.cssText = 'stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrow)'
@@ -90,7 +132,10 @@ const locationLine = (x1, y1, x2, y2) => {
 
 export default {
   startEvent,
+  endEvent,
   connection,
   sequenceFlow,
-  locationLine
+  locationLine,
+  gateway,
+  task
 }

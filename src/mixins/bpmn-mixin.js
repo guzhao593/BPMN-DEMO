@@ -15,12 +15,12 @@ export default {
         if (item.start.id === id) {
           item.start.x = cx
           item.start.y = cy
-          document.getElementById(sid).children[0].setAttribute('points', $.setSequenceFlowPolylinePoints(cx, cy, item.end.x, item.end.y))
+          document.getElementById(sid).children[0].setAttribute('points', $.setSequenceFlowPoints(cx, cy, item.end.x, item.end.y, $.getEleRxAndRy(item.start.id), $.getEleRxAndRy(item.end.id)))
         }
         if (item.end.id === id) {
           item.end.x = cx
           item.end.y = cy
-          document.getElementById(sid).children[0].setAttribute('points', $.setSequenceFlowPolylinePoints(item.start.x, item.start.y, cx, cy))
+          document.getElementById(sid).children[0].setAttribute('points', $.setSequenceFlowPoints(item.start.x, item.start.y, cx, cy, $.getEleRxAndRy(item.start.id), $.getEleRxAndRy(item.end.id)))
         }
       })
     },
