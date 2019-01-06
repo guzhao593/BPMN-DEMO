@@ -30,6 +30,15 @@
       <div class="tool" @mousedown="createNewElement('startEvent', $event)">
         <img src="../../assets/tool/start-event.svg"/>
       </div>
+      <div class="tool" @mousedown="createNewElement('endEvent', $event)">
+        <img src="../../assets/tool/end-event.svg"/>
+      </div>
+      <div class="tool" @mousedown="createNewElement('gateway', $event)">
+        <img src="../../assets/tool/gateway.svg"/>
+      </div>
+      <div class="tool" @mousedown="createNewElement('task', $event)">
+        <img src="../../assets/tool/task.svg"/>
+      </div>
     </div>
 
     <zoom :transform="transform"></zoom>
@@ -91,7 +100,9 @@ export default {
       newConnectDataId: [],
       type: [
         'startEvent',
-        'connection'
+        'endEvent',
+        'task',
+        'gateway'
       ]
     }
   },
@@ -148,7 +159,7 @@ export default {
         return
       }
       this.move = true
-      if (DATA_ID && DATA_ID.includes('startEvent')) {
+      if (this.type.some(type => DATA_ID.includes(type))) {
         this.moveEl.el = document.getElementById(DATA_ID)
         this.moveEl.id = DATA_ID
         this.moveEl.oldTranslateX = $.getMatrix(this.moveEl.el).e
@@ -159,21 +170,25 @@ export default {
       if (this.connetion) {
         this.newEl.el = create.connection(e, this)
         this.connectStartEleId = $.getTargetDataId(e)
+        return
       }
     },
     mousemove (e) {
+      // 移动新元素移动
       if (this.createNew) {
         const TX = e.clientX / this.transform.scaleX - this.newEl.startX
         const TY = e.clientY / this.transform.scaleX - this.newEl.startY
         this.newEl.el.setAttribute('transform', `translate(${TX}, ${TY})`)
         this.listenMoveEleCenterCoordinate(this.newEl.id)
       }
+      // 移动已创建元素
       if (this.move && this.moveEl.el && !this.connetion) {
         const TX = e.clientX / this.transform.scaleX - this.moveEl.startX / this.transform.scaleX + this.moveEl.oldTranslateX
         const TY = e.clientY / this.transform.scaleX - this.moveEl.startY / this.transform.scaleX + this.moveEl.oldTranslateY
         this.moveEl.el.setAttribute('transform', `translate(${TX}, ${TY})`)
         this.listenMoveEleCenterCoordinate(this.moveEl.id)
       }
+      // 连接线移动
       if (this.move && this.connetion) {
         this.newEl.el.childNodes[0].setAttribute('points', this.setConnectionPolylinePoints(e))
       }
@@ -213,9 +228,14 @@ export default {
       width: 60px;
       height: 260px;
       padding: 10px 10px;
+      background: #fff;
       .tool {
         width: 40px;
         height: 40px;
+        margin-bottom: 10px;
+        img {
+          color: #ff7400;
+        }
       }
     }
   }

@@ -10,7 +10,7 @@ export default {
   },
   methods: {
     // 移动图标时序列线跟随一起变化
-    changeSequenceFlow (id, {cx, cy}) {
+    changeSequenceFlow (id, { cx, cy }) {
       Object.entries(this.allSequenceFlowInfo).forEach(([sid, item]) => {
         if (item.start.id === id) {
           item.start.x = cx
@@ -27,8 +27,7 @@ export default {
     // 监听移动坐标并处理
     listenMoveEleCenterCoordinate (id) {
       let { cx, cy } = $.saveElementCenterCoordinate(this, id)
-      let flag = {x: null, y: null}
-      
+      let flag = { x: null, y: null }
       Object.entries(this.elementCenterCoordinate).forEach(([key, value]) => {
         // 相隔距离
         const GAP = 10
@@ -42,7 +41,7 @@ export default {
         }
       })
       // 移动图标时序列线跟随一起变化
-      this.changeSequenceFlow(id, {cx: flag.x || cx, cy: flag.y || cy})
+      this.changeSequenceFlow(id, { cx: flag.x || cx, cy: flag.y || cy })
       // 处理定位线
       this.handleLocationLine(flag, id)
     },
