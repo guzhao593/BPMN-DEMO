@@ -5,7 +5,10 @@ const getTargetDataId = (e) => {
 const getTargetEleGroup = (e) => {
   return document.getElementById(getTargetDataId(e))
 }
-
+// 获取包含自定义属性data-box的子元素
+const getChildHasDataBox = (id) => {
+  return document.getElementById(id).querySelector(`[data-box=${id}]`)
+}
 const getMatrix = (ele) => {
   return ele.transform.baseVal[0].matrix
 }
@@ -20,8 +23,17 @@ const getCenterPoint = (id) => {
 const getCircleCenterPoint = (id) => {
   const el = document.getElementById(id)
   return {
-    x: getMatrix(el).e + Number(el.childNodes[1].getAttribute('x')) + Number(el.childNodes[1].getAttribute('width') / 2),
-    y: getMatrix(el).f + Number(el.childNodes[1].getAttribute('y')) + Number(el.childNodes[1].getAttribute('height') / 2)
+    x: getMatrix(el).e + Number(getChildHasDataBox(id).getAttribute('x')) + Number(getChildHasDataBox(id).getAttribute('width') / 2),
+    y: getMatrix(el).f + Number(getChildHasDataBox(id).getAttribute('y')) + Number(getChildHasDataBox(id).getAttribute('height') / 2)
+  }
+}
+
+const setElementTransform = (id, attr, value) => {
+  const el = document.getElementById(id)
+  if (attr === 'x') {
+    el.setAttribute('transform', `translate(${value - Number(getChildHasDataBox(id).getAttribute('x')) - Number(getChildHasDataBox(id).getAttribute('width') / 2)}, ${getMatrix(el).f})`)
+  } else {
+    el.setAttribute('transform', `translate(${getMatrix(el).e}, ${value - Number(getChildHasDataBox(id).getAttribute('y')) - Number(getChildHasDataBox(id).getAttribute('height') / 2)})`)
   }
 }
 /**
@@ -114,7 +126,22 @@ const saveElementCenterCoordinate = (vm, id) => {
 const deleteElementCenterCoordinate = (vm, id, cx, cy) => {
   delete vm.elementCenterCoordinate[id]
 }
-
+const recordSequenceFlowInfo = (vm, dataId) => {
+  const startCoordinate = getCenterPoint(vm.connectStartEleId)
+  const endCoordinate = getCenterPoint(vm.connectEndEleId)
+  vm.allSequenceFlowInfo[dataId] = {
+    start: {
+      id: vm.connectStartEleId,
+      x: startCoordinate.x,
+      y: startCoordinate.y
+    },
+    end: {
+      id: vm.connectEndEleId,
+      x: endCoordinate.x,
+      y: endCoordinate.y
+    }
+  }
+}
 export default {
   getTargetDataId,
   getTargetEleGroup,
@@ -124,5 +151,7 @@ export default {
   getCircleCenterPoint,
   setSequenceFlowPolylinePoints,
   saveElementCenterCoordinate,
-  deleteElementCenterCoordinate
+  deleteElementCenterCoordinate,
+  setElementTransform,
+  recordSequenceFlowInfo
 }

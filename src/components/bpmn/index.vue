@@ -15,6 +15,12 @@
         :transform="`matrix(${transform.scaleX},0,0,${transform.scaleY},${transform.translateX},${transform.translateY})`"
       >
       </g>
+
+      <defs>
+        <marker id="arrow" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+          <path d="M 0 0 3 3 0 6 Z" style="fill: #333"></path>
+        </marker>
+      </defs>
     </svg>
 
     <div class="tool-box">
@@ -66,10 +72,12 @@ export default {
         startX: 0,
         startY: 0
       },
+      allSequenceFlowInfo: {},
       elementCenterCoordinate: {},
       startMove: false,
       bpmnEl: null,
       newConnection: false,
+      connectStartEleId: null,
       newConnectDataId: [],
       type: [
         'startEvent',
@@ -90,6 +98,7 @@ export default {
     init () {
       this.bpmnEl = document.getElementById('bpmn')
       this.initEvent()
+      this.initLocationLine()
     },
     initEvent () {
       document.documentElement.addEventListener('mouseup', (e) => {
@@ -98,6 +107,10 @@ export default {
           this.removeNewElement()
         }
       })
+    },
+    initLocationLine () {
+      this.locationLine.yEl = createElement.locationLine(0, 0, 0, this.bpmnEl.getBoundingClientRect().height)
+      this.locationLine.xEl = createElement.locationLine(0, 0, this.bpmnEl.getBoundingClientRect().width, 0)
     },
     newStartEvent (type, e) {
       this.new = true
@@ -136,6 +149,7 @@ export default {
       if (this.newConnection) {
         if (!DATA_ID) return (this.startMove = false)
         createElement.connection(e, this)
+        this.connectStartEleId = $.getTargetDataId(e)
         this.newElement.el = document.getElementById(this.newElement.id)
       }
     },
