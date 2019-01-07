@@ -122,6 +122,7 @@ export default {
       // 初始化定位线
       this.initLocationLine()
     },
+
     initEvent () {
       document.documentElement.addEventListener('mouseup', (e) => {
         // 鼠标松开时，如果指针不在bpmn范围内，则删除连接线
@@ -130,10 +131,12 @@ export default {
         }
       })
     },
+
     initLocationLine () {
       this.locationLine.yEl = create.locationLine(0, 0, 0, this.bpmnEl.getBoundingClientRect().height)
       this.locationLine.xEl = create.locationLine(0, 0, this.bpmnEl.getBoundingClientRect().width, 0)
     },
+
     createNewElement (type, e) {
       this.resetStatus()
       this.createNew = true
@@ -141,10 +144,12 @@ export default {
       this.newEl.startY = e.clientY / this.transform.scaleX
       this.newEl.el = create[type](e, this)
     },
+
     newConnect (e) {
       this.resetStatus()
       this.connetion = true
     },
+
     mouseover (e) {
       const dataId = $.getTargetDataId(e)
       this.handleNewConnectDataId(dataId)
@@ -152,6 +157,7 @@ export default {
         document.getElementById(dataId).classList.toggle('target-hover')
       }
     },
+
     mousedown (e) {
       const DATA_ID = $.getTargetDataId(e)
       if (!DATA_ID) return
@@ -174,6 +180,7 @@ export default {
         this.connectStartEleId = $.getTargetDataId(e)
       }
     },
+
     mousemove (e) {
       // 移动新元素移动
       if (this.createNew) {

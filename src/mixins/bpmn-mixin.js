@@ -2,8 +2,11 @@ import $ from 'utils/methods'
 export default {
   data () {
     return {
+      // 定位线
       locationLine: {
+        // y轴定位线
         yEl: null,
+        // x轴定位线
         xEl: null
       }
     }
@@ -51,6 +54,7 @@ export default {
       // 处理定位线
       this.handleLocationLine(flag, id)
     },
+    // 处理定位线
     handleLocationLine (flag, id) {
       if (flag.x) {
         $.setElementTransform(id, 'x', flag.x)

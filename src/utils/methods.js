@@ -175,6 +175,11 @@ const recordSequenceFlowInfo = (vm, dataId) => {
     }
   }
 }
+/**
+ * 获取元素x或y轴方向中心点距边框的距离
+ * @param {String} id 元素id
+ * @return {Object} 元素x或y轴方向中心点距边框的距离
+ */
 const getEleRxAndRy = (id) => {
   const EL = document.getElementById(id).childNodes[0]
   switch (true) {
