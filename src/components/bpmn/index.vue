@@ -5,6 +5,7 @@
       id="bpmn"
       width="100%"
       height="500"
+      @click="mouseClick"
       @mousedown="mousedown"
       @mousemove="mousemove"
       @mouseup="mouseup"
@@ -82,6 +83,14 @@ export default {
         startX: 0,
         startY: 0
       },
+      // 选择中元素
+      selectEl: {
+        el: null,
+        id: ''
+      },
+      overEl: {
+        el: null
+      },
       // 所有序列线信息
       allSequenceFlowInfo: {},
       // 所有图标中心坐标
@@ -94,6 +103,8 @@ export default {
       move: false,
       // 连接线状态
       connetion: false,
+      // 选中状态
+      select: false,
       // 连接线起点元素id
       connectStartEleId: null,
       // 鼠标经过的最后两个元素dataId，最后一个为连接线的id,倒数第二个为最后经过的元素id
@@ -150,12 +161,23 @@ export default {
       this.connetion = true
     },
 
-    mouseover (e) {
-      const dataId = $.getTargetDataId(e)
-      this.handleNewConnectDataId(dataId)
-      if (dataId && this.type.includes(dataId.split('--')[0])) {
-        document.getElementById(dataId).classList.toggle('target-hover')
+    mouseClick (e) {
+      const DATA_ID = $.getTargetDataId(e)
+      if (!DATA_ID) {
+        this.handleBoxRectStyle(DATA_ID, 'click')
+        return
       }
+      this.select = true
+      this.clearOldSelectElStyle(DATA_ID)
+      this.selectEl.el = document.getElementById(DATA_ID)
+      this.selectEl.id = DATA_ID
+      this.handleBoxRectStyle(DATA_ID, 'click')
+    },
+
+    mouseover (e) {
+      const DATA_ID = $.getTargetDataId(e)
+      this.handleNewConnectDataId(DATA_ID)
+      this.handleBoxRectStyle(DATA_ID, 'mouseover')
     },
 
     mousedown (e) {
@@ -182,6 +204,7 @@ export default {
     },
 
     mousemove (e) {
+      this.handleBoxRectStyle($.getTargetDataId(e), 'mousemove')
       // 移动新元素移动
       if (this.createNew) {
         const TX = e.clientX / this.transform.scaleX - this.newEl.startX
@@ -244,6 +267,25 @@ export default {
         img {
           color: #ff7400;
         }
+      }
+    }
+    /deep/ .djs-group {
+      .djs-box {
+        fill: #fff;
+        fill-opacity: 0;
+        stroke-width: 1px;
+        stroke: #FF8888;
+        stroke-dasharray: 3 3;
+        shape-rendering: crispEdges;
+        display: none;
+      }
+      .selected {
+        display: block;
+        stroke: #8888FF;
+      }
+      .hover {
+        display: block;
+        stroke: #FF8888;
       }
     }
   }

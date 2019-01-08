@@ -101,6 +101,49 @@ export default {
         this.newConnectDataId.length >= 2 && this.newConnectDataId.pop()
         this.newConnectDataId.unshift(dataId)
       }
+    },
+    // 处理图形在鼠标滑动或点击时的样式
+    handleBoxRectStyle (dataId, event) {
+      switch (event) {
+        case 'mouseover':
+          if (dataId) {
+            const isCanShowEl = this.type.includes(dataId.split('--')[0])
+            const isCanShowStatus = !(this.createNew || this.move || this.connetion)
+            this.overEl.el = document.querySelector(`[data-box=${dataId}]`)
+            if (isCanShowEl && isCanShowStatus) {
+              this.overEl.el.classList.add('hover')
+            }
+          } else {
+            this.overEl.el && this.overEl.el.classList.remove('hover')
+          }
+          break
+        case 'click':
+          if (dataId) {
+            const isCanShowEl = this.type.includes(dataId.split('--')[0])
+            this.selectEl.el = document.querySelector(`[data-box=${dataId}]`)
+            this.selectEl.id = dataId
+            if (isCanShowEl) {
+              this.selectEl.el.classList.add('selected')
+            }
+          } else {
+            this.selectEl.el && this.selectEl.el.classList.remove('selected')
+            this.select = false
+            this.selectEl.el = null
+            this.selectEl.id = null
+          }
+          break
+        case 'mousemove':
+          if (dataId && this.move && !this.connetion) {
+            document.querySelector(`[data-box=${this.selectEl.id}]`).classList.remove('selected')
+            document.querySelector(`[data-box=${dataId}]`).classList.remove('hover')
+            document.querySelector(`[data-box=${dataId}]`).classList.remove('selected')
+          }
+      }
+    },
+    clearOldSelectElStyle (newId) {
+      if (newId && this.selectEl.id && newId !== this.selectEl.id) {
+        document.querySelector(`[data-box=${this.selectEl.id}]`).classList.remove('selected')
+      }
     }
   }
 }

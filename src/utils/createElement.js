@@ -7,7 +7,8 @@ const createGroup = (vm, dataId) => {
   vm.newEl.id = g.id = dataId
   $.setAttr(g, {
     'data-id': dataId,
-    transform: 'translate(0, 0)'
+    transform: 'translate(0, 0)',
+    class: 'djs-group'
   })
   return g
 }
@@ -15,7 +16,9 @@ const createGroup = (vm, dataId) => {
 const creatBoxRect = (attrs) => {
   const rect = document.createElementNS(NS, 'rect')
   $.setAttr(rect, attrs)
-  rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges'
+  rect.setAttribute('class', 'djs-box')
+  rect.dataset.box = attrs['data-id']
+  // rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges; display: none'
   return rect
 }
 // 生成随机的dataId
@@ -49,7 +52,6 @@ const task = (e, vm) => {
   g.appendChild(task)
   const rect = creatBoxRect({
     'data-id': dataId,
-    'data-box': dataId,
     x: client.cx - 45,
     y: client.cy - 30,
     width: 90,
@@ -74,7 +76,6 @@ const gateway = (e, vm) => {
   g.appendChild(polygon)
   const rect = creatBoxRect({
     'data-id': dataId,
-    'data-box': dataId,
     x: c.cx - 25,
     y: c.cy - 25,
     width: 50,
@@ -102,7 +103,6 @@ const creatEvent = (type, e, vm) => {
   g.appendChild(circle)
   const rect = creatBoxRect({
     'data-id': dataId,
-    'data-box': dataId,
     x: client.cx - 25,
     y: client.cy - 25,
     height: 50,
