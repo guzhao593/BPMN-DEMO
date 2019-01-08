@@ -227,7 +227,7 @@ export default {
 
     mouseup (e) {
       if (this.connetion) {
-        if (this.connectEndEleId) {
+        if (this.connectEndEleId && this.connectStartEleId) {
           const endCenterPoint = $.getCenterPoint(this.connectEndEleId)
           create.sequenceFlow(e, this, endCenterPoint)
         }

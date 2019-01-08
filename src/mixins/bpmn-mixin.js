@@ -134,9 +134,12 @@ export default {
           break
         case 'mousemove':
           if (dataId && this.move && !this.connetion) {
-            document.querySelector(`[data-box=${this.selectEl.id}]`).classList.remove('selected')
-            document.querySelector(`[data-box=${dataId}]`).classList.remove('hover')
-            document.querySelector(`[data-box=${dataId}]`).classList.remove('selected')
+            const isCanShowEl = this.type.includes(dataId.split('--')[0])
+            if (isCanShowEl && this.move && !this.connetion) {
+              this.selectEl.id && document.querySelector(`[data-box=${this.selectEl.id}]`).classList.remove('selected')
+              document.querySelector(`[data-box=${dataId}]`).classList.remove('hover')
+              document.querySelector(`[data-box=${dataId}]`).classList.remove('selected')
+            }
           }
       }
     },
