@@ -141,8 +141,9 @@ const endEvent = (e, vm) => {
 const connection = (e, vm) => {
   const dataId = generateDataId('connection')
   const g = createGroup(vm, dataId)
-  vm.newEl.startX = $.getMatrix($.getTargetEleGroup(e)).e + Number(e.target.getAttribute('x')) + Number(e.target.getAttribute('width') / 2)
-  vm.newEl.startY = $.getMatrix($.getTargetEleGroup(e)).f + Number(e.target.getAttribute('y')) + Number(e.target.getAttribute('height') / 2)
+  const BOX_RECT = document.querySelector(`[data-box=${e.target.dataset.id}]`)
+  vm.newEl.startX = $.getMatrix($.getTargetEleGroup(e)).e + Number(BOX_RECT.getAttribute('x')) + Number(BOX_RECT.getAttribute('width') / 2)
+  vm.newEl.startY = $.getMatrix($.getTargetEleGroup(e)).f + Number(BOX_RECT.getAttribute('y')) + Number(BOX_RECT.getAttribute('height') / 2)
 
   const polyline = document.createElementNS(NS, 'polyline')
   $.setAttr(polyline, {
