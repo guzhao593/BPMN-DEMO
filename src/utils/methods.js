@@ -197,8 +197,8 @@ const getEleRxAndRy = (id) => {
       }
     case id.includes('gateway'):
       return {
-        rx: +EL.getAttribute('width') / 2,
-        ry: +EL.getAttribute('height') / 2
+        rx: +EL.dataset.r,
+        ry: +EL.dataset.r
       }
   }
 }

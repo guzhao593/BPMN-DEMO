@@ -11,19 +11,35 @@ const createGroup = (vm, dataId) => {
   })
   return g
 }
+// 创建图形盒子
+const creatBoxRect = (attrs) => {
+  const rect = document.createElementNS(NS, 'rect')
+  $.setAttr(rect, attrs)
+  rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges'
+  return rect
+}
 // 生成随机的dataId
 const generateDataId = (type) => {
   return `${type}--${Date.now()}`
 }
+// 计算鼠标在画布的坐标
+const computedCxAndCy = (e, vm) => {
+  const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
+  return {
+    cx: e.clientX / vm.transform.scaleX - bpmnElOffset.left,
+    cy: e.clientY / vm.transform.scaleX - bpmnElOffset.top
+  }
+}
+// 创建任务图形
 const task = (e, vm) => {
   const dataId = generateDataId('task')
-  const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
+  const client = computedCxAndCy(e, vm)
   const g = createGroup(vm, dataId)
   const task = document.createElementNS(NS, 'rect')
   $.setAttr(task, {
     'data-id': dataId,
-    x: e.clientX / vm.transform.scaleX - bpmnElOffset.left - 40,
-    y: e.clientY / vm.transform.scaleX - bpmnElOffset.top - 25,
+    x: client.cx - 40,
+    y: client.cy - 25,
     width: 80,
     height: 50,
     rx: 5,
@@ -31,63 +47,80 @@ const task = (e, vm) => {
   })
   task.style.cssText = 'stroke: #333; fill: #fff'
   g.appendChild(task)
-  const rect = document.createElementNS(NS, 'rect')
-  $.setAttr(rect, {
+  const rect = creatBoxRect({
     'data-id': dataId,
     'data-box': dataId,
-    x: e.clientX / vm.transform.scaleX - bpmnElOffset.left - 45,
-    y: e.clientY / vm.transform.scaleX - bpmnElOffset.top - 30,
+    x: client.cx - 45,
+    y: client.cy - 30,
     width: 90,
     height: 60
   })
-  rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges'
   g.appendChild(rect)
   document.querySelector('.g-box').appendChild(g)
   return g
 }
+// 创建网关
 const gateway = (e, vm) => {
-
+  const dataId = generateDataId('gateway')
+  const c = computedCxAndCy(e, vm)
+  const g = createGroup(vm, dataId)
+  const polygon = document.createElementNS(NS, 'polygon')
+  $.setAttr(polygon, {
+    'data-id': dataId,
+    points: `${c.cx - 20} ${c.cy}, ${c.cx} ${c.cy - 20}, ${c.cx + 20} ${c.cy}, ${c.cx} ${c.cy + 20}`,
+    'data-r': 20
+  })
+  polygon.style.cssText = 'stroke: #333; fill: #fff; stroke-width: 2'
+  g.appendChild(polygon)
+  const rect = creatBoxRect({
+    'data-id': dataId,
+    'data-box': dataId,
+    x: c.cx - 25,
+    y: c.cy - 25,
+    width: 50,
+    height: 50
+  })
+  g.appendChild(rect)
+  document.querySelector('.g-box').appendChild(g)
+  return g
 }
-// 创建起始事件图标
+// 创建起始事件图形
 const creatEvent = (type, e, vm) => {
   const dataId = generateDataId(type)
-  const bpmnElOffset = vm.bpmnEl.getBoundingClientRect()
+  const client = computedCxAndCy(e, vm)
   const g = createGroup(vm, dataId)
 
   const circle = document.createElementNS(NS, 'circle')
   $.setAttr(circle, {
     'data-id': dataId,
-    cx: e.clientX / vm.transform.scaleX - bpmnElOffset.left,
-    cy: e.clientY / vm.transform.scaleX - bpmnElOffset.top,
+    cx: client.cx,
+    cy: client.cy,
     r: 20
   })
   circle.style.cssText = 'stroke: #333; fill: #fff'
   circle.style.strokeWidth = type === 'startEvent' ? 2 : 5
   g.appendChild(circle)
-
-  const rect = document.createElementNS(NS, 'rect')
-  $.setAttr(rect, {
+  const rect = creatBoxRect({
     'data-id': dataId,
     'data-box': dataId,
-    x: e.clientX / vm.transform.scaleX - bpmnElOffset.left - 25,
-    y: e.clientY / vm.transform.scaleX - bpmnElOffset.top - 25,
+    x: client.cx - 25,
+    y: client.cy - 25,
     height: 50,
     width: 50
   })
-  rect.style.cssText = 'fill: #fff;fill-opacity: 0; stroke-width: 1px; stroke: #333; stroke-dasharray: 3 3;shape-rendering: crispEdges'
   g.appendChild(rect)
   document.querySelector('.g-box').appendChild(g)
   return g
 }
-
+// 创建开始事件图形
 const startEvent = (e, vm) => {
   return creatEvent('startEvent', e, vm)
 }
-
+// 创建结束事件图形
 const endEvent = (e, vm) => {
   return creatEvent('endEvent', e, vm)
 }
-// 创建连接线图标
+// 创建连接线图形
 const connection = (e, vm) => {
   const dataId = generateDataId('connection')
   const g = createGroup(vm, dataId)
@@ -104,7 +137,7 @@ const connection = (e, vm) => {
   document.querySelector('.g-box').appendChild(g)
   return g
 }
-// 创建序列线图标
+// 创建序列线图形
 const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
   const dataId = generateDataId('sequenceFlow')
   const g = createGroup(vm, dataId)
@@ -120,7 +153,7 @@ const sequenceFlow = (e, vm, { x: ex, y: ey }) => {
   $.recordSequenceFlowInfo(vm, dataId)
   return g
 }
-// 创建定位线图标
+// 创建定位线图形
 const locationLine = (x1, y1, x2, y2) => {
   const dataId = generateDataId('locationLine')
   const line = document.createElementNS(NS, 'line')
